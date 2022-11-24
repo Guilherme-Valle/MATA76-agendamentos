@@ -14,9 +14,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AgendamentoService {
 
-	public Agendamento buscarAgendamento() throws InterruptedException, ExecutionException {
+	private final static String COLECAO = "Agendamento";
+
+	public Agendamento buscar(String documentId) throws InterruptedException, ExecutionException {
 		Firestore dbFirestore = FirestoreClient.getFirestore();
-		DocumentReference documentReference = dbFirestore.collection("Agendamento").document("Agendar");
+		DocumentReference documentReference = dbFirestore.collection(COLECAO).document(documentId);
 		ApiFuture<DocumentSnapshot> future = documentReference.get();
 
 		DocumentSnapshot document = future.get();
@@ -31,9 +33,14 @@ public class AgendamentoService {
 		}
 	}
 
-	public String criarAgenda(Agendamento agendamento) throws ExecutionException, InterruptedException {
+	public String salvar(Agendamento agendamento) throws ExecutionException, InterruptedException {
 		Firestore dbFirestore = FirestoreClient.getFirestore();
-		ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection("Agendamento").document("Agendar_2").set(agendamento);
+		ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection(COLECAO).document("Agendar_1").set(agendamento);
 		return collectionsApiFuture.get().getUpdateTime().toString();
-	};
+	}
+
+	public void remover(String documentId) {
+		Firestore dbFirestore = FirestoreClient.getFirestore();
+		ApiFuture<WriteResult> collectionsApiFuture = dbFirestore.collection(COLECAO).document(documentId).delete();
+	}
 }
