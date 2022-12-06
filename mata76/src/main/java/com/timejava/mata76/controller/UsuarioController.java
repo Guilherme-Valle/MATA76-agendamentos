@@ -1,5 +1,6 @@
 package com.timejava.mata76.controller;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.timejava.mata76.entidades.Usuario;
@@ -9,15 +10,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
 	@Autowired
 	UsuarioService usuarioService;
+
+	@GetMapping
+	public ResponseEntity<List<Usuario>> buscarUsuarios() throws ExecutionException, InterruptedException {
+		return ResponseEntity.ok(usuarioService.buscar());
+	}
 
 	@GetMapping("/{documentId}")
 	public ResponseEntity<Usuario> buscarUsuario(@PathVariable String documentId) throws ExecutionException, InterruptedException {
@@ -25,8 +32,13 @@ public class UsuarioController {
 	}
 
 	@PostMapping("/criar-usuario")
-	public ResponseEntity<String> criarUsuario() throws ExecutionException, InterruptedException {
-		Usuario usuario = new Usuario("99999999997", "Renato");
+	public ResponseEntity<String> criarUsuario(@RequestBody Usuario usuario) throws ExecutionException, InterruptedException {
 		return ResponseEntity.ok(usuarioService.salvar(usuario));
+	}
+
+	@PostMapping("/remover-usuario/{cpf}")
+	public ResponseEntity<String> removerUsuario(@PathVariable String cpf){
+		usuarioService.remover(cpf);
+		return ResponseEntity.ok("Usuário removido!");
 	}
 }
